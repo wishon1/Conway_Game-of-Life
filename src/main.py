@@ -26,9 +26,12 @@ Execution flow:
         └── exit cleanly on 'q'
 """
 import argparse
+import curses
+import time
 
-# You'll need to import PATTERNS from patterns.py
-# from patterns import PATTERNS
+from grid import Grid
+from renderer import Renderer
+from patterns import PATTERNS, stamp_pattern
 
 # ---------------------------------------------------------------------------
 # Default simulation configuration.
@@ -78,6 +81,26 @@ def parse_args():
     # )
 
     return arg_parser.parse_args()  # Fixed: was parser
+
+
+def run(terminal_display, args):
+    """
+    Run the Conway stimulation inside a Curses session.
+
+    Args:
+        terminal_display: curses standard screen object
+
+        args: parsed CLI argumnet.
+    """
+    # Create a simulation grid for the game
+    simulatn_grid = Grid(args.rows, args.cols)
+
+    # stamp the initial pattern near the center of the board
+    pattern = PATTERNS[args.pattern]
+
+    center_row = args.row // 2
+    center_col = args.cols // 2
+    stamp_pattern(grid, pattern, center_row, center_col)
 
 # For testing the argument parser
 if __name__ == "__main__":
