@@ -1,7 +1,5 @@
 """
-main.py - Entry point of the program
-Author : Wisdom A. Honest
-Project: Conway Game of life
+main.py - Entry point of the program.
 
 Architecture:
     main.py intentionally contains NO Conway rules and NO rendering
@@ -27,24 +25,26 @@ Execution flow:
 """
 import argparse
 import curses
+import sys
 import time
 
 from grid import Grid
-from renderer import Renderer
 from patterns import PATTERNS, stamp_pattern
+from renderer import Renderer
 
-# Defualt configuration for the simulation
+# Default configuration for the simulation
 DEFAULT_ROWS = 30
 DEFAULT_COLS = 80
 DEFAULT_DELAY = 0.12
 DEFAULT_PATTERN = "glider"
 
+
 def parse_args():
     """
-    parse commandline arguments
+    Parse command line arguments.
 
     Returns:
-        argparse.Namespace: parse command line arguments.
+        argparse.Namespace: Parsed command line arguments.
     """
     arg_parser = argparse.ArgumentParser(description="Conways Game of life")
 
@@ -52,9 +52,9 @@ def parse_args():
         "--rows",
         type=int,
         default=DEFAULT_ROWS,
-        help="Grid height in the cells"
+        help="Grid height in cells"
     )
-    
+
     arg_parser.add_argument(
         "--cols",
         type=int,
@@ -66,56 +66,78 @@ def parse_args():
         "--delay",
         type=float,
         default=DEFAULT_DELAY,
-        help="Delay between generations in seconds"   
+        help="Delay between generations in seconds"
     )
 
     arg_parser.add_argument(
-         "--pattern",
-         choices=PATTERNS.keys(),
-         default=DEFAULT_PATTERN,
-         help="Initial Conway seed pattern"
-     )
+        "--pattern",
+        choices=PATTERNS.keys(),
+        default=DEFAULT_PATTERN,
+        help="Seed pattern to start with (default: glider)"
+    )
 
     return arg_parser.parse_args()
 
 
-def run(terminal_display, args):
+def run(stdscr, args):
     """
-    Run the Conway stimulation inside the Curses session.
+    Initialise the grid and renderer, then drive the simulation loop.
+
+    This function is passed to curses.wrapper so the terminal is always
+    restored cleanly on exit or crash.
 
     Args:
-        terminal_display: curses standard screen object
-
-        args: parsed CLI argumnet.
+        stdscr: The curses standard screen provided by curses.wrapper.
+        args (argparse.Namespace): Parsed command line arguments.
     """
-    # Create a simulation grid for the game
-    simulatn_grid = Grid(args.rows, args.cols)
+    # create grid and stamp the chosen seed pattern at the center
+    grid = Grid(args.rows, args.cols)
 
-    # stamp the initial pattern near the center of the board
-    board_pattern = PATTERNS[args.pattern]
-
-    center_row = args.row // 2
+    center_row = args.rows // 2
     center_col = args.cols // 2
-    stamp_pattern(grid, board_pattern, center_row, center_col)
+    stamp_pattern(grid, PATTERNS[args.pattern], center_row, center_col)
 
-    # create the renderer
-    render = Renderer(terminal_display, args.rows, args.cols)
+    # initialise renderer — owns all terminal I/O from this point
+    renderer = Renderer(stdscr, args.rows, args.cols)
     renderer.init_colors()
 
     generation = 0
 
+    # ITERATION: the simulation loop.
+    # Each pass through this loop is one tick of the Game of Life universe.
     while True:
         # draw current universe state
         renderer.draw(grid, generation)
 
-        # non-blocking keyboard input
-        key = terminal_display.getch()
+        # non-blocking keyboard input — stdscr configured nodelay in Renderer
+        key = stdscr.getch()
 
-        # quit simulation
+        # quit on 'q' or 'Q'
         if key in (ord('q'), ord('Q')):
             break
+
+        # advance the universe by one generation
+        grid.next_generation()
+
         generation += 1
         time.sleep(args.delay)
-    
-    
 
+
+def main():
+    """
+    Program entry point.
+
+    Parses arguments and hands control to curses.wrapper which handles
+    terminal initialisation and guaranteed cleanup on exit or crash.
+    """
+    args = parse_args()
+
+    try:
+        curses.wrapper(lambda stdscr: run(stdscr, args))
+    except KeyboardInterrupt:
+        # clean exit on Ctrl-C — no stack trace printed to terminal
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
