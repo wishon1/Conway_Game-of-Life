@@ -33,9 +33,7 @@ from grid import Grid
 from renderer import Renderer
 from patterns import PATTERNS, stamp_pattern
 
-# ---------------------------------------------------------------------------
-# Default simulation configuration.
-# ---------------------------------------------------------------------------
+# Defualt configuration for the simulation
 DEFAULT_ROWS = 30
 DEFAULT_COLS = 80
 DEFAULT_DELAY = 0.12
@@ -46,46 +44,44 @@ def parse_args():
     parse commandline arguments
 
     Returns:
-        argparse.Namespace:
-            Parse CLI arguments.
+        argparse.Namespace: parse command line arguments.
     """
     arg_parser = argparse.ArgumentParser(description="Conways Game of life")
 
     arg_parser.add_argument(
         "--rows",
         type=int,
-        default=DEFAULT_ROWS,  # Fixed: was defualt
+        default=DEFAULT_ROWS,
         help="Grid height in the cells"
     )
     
     arg_parser.add_argument(
         "--cols",
         type=int,
-        default=DEFAULT_COLS,  # Fixed: was defualt
+        default=DEFAULT_COLS,
         help="Grid width in cells"
     )
 
-    arg_parser.add_argument(  # Fixed: was atg_parser
-        "--delay",  # Fixed: should be --delay (not --delays to match variable)
+    arg_parser.add_argument(
+        "--delay",
         type=float,
-        default=DEFAULT_DELAY,  # Fixed: was defualt
+        default=DEFAULT_DELAY,
         help="Delay between generations in seconds"   
     )
 
-    # Commented out until you import PATTERNS
-    # arg_parser.add_argument(
-    #     "--pattern",
-    #     choices=PATTERNS.keys(),
-    #     default=DEFAULT_PATTERN,
-    #     help="Initial Conway seed pattern"
-    # )
+    arg_parser.add_argument(
+         "--pattern",
+         choices=PATTERNS.keys(),
+         default=DEFAULT_PATTERN,
+         help="Initial Conway seed pattern"
+     )
 
-    return arg_parser.parse_args()  # Fixed: was parser
+    return arg_parser.parse_args()
 
 
 def run(terminal_display, args):
     """
-    Run the Conway stimulation inside a Curses session.
+    Run the Conway stimulation inside the Curses session.
 
     Args:
         terminal_display: curses standard screen object
@@ -96,16 +92,30 @@ def run(terminal_display, args):
     simulatn_grid = Grid(args.rows, args.cols)
 
     # stamp the initial pattern near the center of the board
-    pattern = PATTERNS[args.pattern]
+    board_pattern = PATTERNS[args.pattern]
 
     center_row = args.row // 2
     center_col = args.cols // 2
-    stamp_pattern(grid, pattern, center_row, center_col)
+    stamp_pattern(grid, board_pattern, center_row, center_col)
 
-# For testing the argument parser
-if __name__ == "__main__":
-    args = parse_args()
-    print(f"Rows: {args.rows}")
-    print(f"Cols: {args.cols}")
-    print(f"Delay: {args.delay}")
-    # print(f"Pattern: {args.pattern}")
+    # create the renderer
+    render = Renderer(terminal_display, args.rows, args.cols)
+    renderer.init_colors()
+
+    generation = 0
+
+    while True:
+        # draw current universe state
+        renderer.draw(grid, generation)
+
+        # non-blocking keyboard input
+        key = terminal_display.getch()
+
+        # quit simulation
+        if key in (ord('q'), ord('Q')):
+            break
+        generation += 1
+        time.sleep(args.delay)
+    
+    
+
