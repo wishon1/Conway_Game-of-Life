@@ -1,5 +1,9 @@
+#!/usr/bin/env python3
 """
 main.py - Entry point of the program.
+
+Author : Wisdom A. Honest
+Project: Conway Game of life
 
 Architecture:
     main.py intentionally contains NO Conway rules and NO rendering
@@ -82,7 +86,6 @@ def parse_args():
 def run(stdscr, args):
     """
     Initialise the grid and renderer, then drive the simulation loop.
-
     This function is passed to curses.wrapper so the terminal is always
     restored cleanly on exit or crash.
 

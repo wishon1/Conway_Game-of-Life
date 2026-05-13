@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 renderer.py — Handles everything you see on screen.
 
@@ -43,7 +44,6 @@ FADE_FRAMES = 1
 class Renderer:
     """
     Controls everything you see on screen.
-
     Reads the grid to draw cells, but never changes it.
 
     Attributes:
@@ -107,7 +107,9 @@ class Renderer:
         self._screen.erase()
 
         # ITERATION — draw every cell in the grid row by row
-        for row in range(self.row_count):      
+        # correct
+        for row in range(self.row_count):
+            for col in range(self.col_count):
                 state = self._get_cell_state(grid, row, col)
                 symbol, style = self._pick_symbol(state)
                 self._place_cell(row, col, symbol, style)
@@ -128,7 +130,6 @@ class Renderer:
 
         Returns:
             int: One of the module-level state constants
-                 (ALIVE, NEW, DEAD, EMPTY).
         """
         now_alive = grid.is_alive(row, col)
         was_alive = grid.was_alive(row, col)
@@ -144,7 +145,6 @@ class Renderer:
     def _pick_symbol(self, state):
         """
         Return the symbol and color for a cell state.
-
         NEW cells blink on and off. DEAD cells fade briefly before
         vanishing. ALIVE and EMPTY cells are static.
 
@@ -191,8 +191,6 @@ class Renderer:
         try:
             self._screen.addch(row, col, symbol, style)
         except curses.error:
-            # addch raises on the bottom-right corner cell of the terminal
-            # this is a known curses quirk — safe to ignore
             pass
 
     def _show_info(self, generation):

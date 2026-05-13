@@ -1,5 +1,6 @@
+#!/usr/bin/ env python3
 """
-This module contains the main pattern for Conways Game of life.
+patterns.py — Seed patterns for Conway's Game of Life.
 
 Module function:
     - Define reusable Conway seed patterns
@@ -33,6 +34,7 @@ Example:
         (12, 21)
         (12, 22)
 """
+
 # Oscillator patterns
 BLINKER = (
     (0, 0),
@@ -55,19 +57,21 @@ PATTERNS = {
     "glider": GLIDER,
 }
 
+
 def stamp_pattern(grid, pattern, start_row, start_col):
     """
-    method to stamp a conway pattern into a grid; it will iterate
-    each pair in the pattern and translate it relative to the 'start'
+    Stamp a Conway pattern into a grid at the given origin position.
+
+    Iterates each coordinate pair in the pattern and translates it
+    relative to (start_row, start_col) before marking the cell alive.
 
     Args:
         grid (Grid): Target Grid object.
-
-        pattern (tuple[tuple[int, int]]): Iterable of relative coordinate offsets.
-
+        pattern (tuple[tuple[int, int]]): Iterable of relative coordinate
+                                          offsets.
         start_row (int): Row origin where the pattern begins.
-
         start_col (int): Column origin where the pattern starts.
     """
+    # ITERATION: stamp each cell offset onto the grid
     for row, col in pattern:
-        grid.set_alivestart(start_row + row, start_col + col)
+        grid.set_alive(start_row + row, start_col + col)
