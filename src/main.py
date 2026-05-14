@@ -156,6 +156,12 @@ def run(stdscr, args):
 
         generation += 1
         time.sleep(args.delay)
+    
+def start(screen, args):
+    """
+    calls run() function and passes the screen to it
+    """
+    run(screen, args)
 
 
 def main():
@@ -168,8 +174,14 @@ def main():
     if args.pattern == DEFAULT_PATTERN:
         args.pattern = select_pattern()
 
+        def start(stdscr):
+            """
+            Sets up the terminal for drawing
+            """
+            run(stdscr, args)
+
     try:
-        curses.wrapper(lambda stdscr: run(stdscr, args))
+        curses.wrapper(start)
     except KeyboardInterrupt:
         # clean exit on Ctrl-C — no stack trace printed to terminal
         sys.exit(0)
