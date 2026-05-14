@@ -1,9 +1,6 @@
+#!/usr/bin/env python3
 """
 grid.py — The brain of the game.
-
-Author : Wisdom A. Honest
-Project: Conway Game of life
-
 This module tracks which cells are alive or dead, counts neighbors, applies
 Conway's rules, and advances to the next generation. It knows nothing about
 screens or terminals.
@@ -108,12 +105,6 @@ class Grid:
             generation, which is the best you can do for Game of Life.
             Space-wise, we use two grids total (double buffering), but
             they're allocated once at the start and reused forever.
-
-        RISC-V / HPC note:
-            Row-major traversal means each inner iteration accesses the
-            next contiguous memory address. At the scale of the 400-code
-            HPC project this internship targets, access pattern discipline
-            like this compounds into meaningful throughput gains.
         """
         # snapshot current state before overwriting — used by was_alive()
         for row in range(self.rows):
@@ -121,8 +112,8 @@ class Grid:
                 self._previous_grid[row][col] = self._current_grid[row][col]
 
         # ITERATION — nested loops traverse every cell in the grid
-        for row in range(self.rows):        # outer: iterate over rows
-            for col in range(self.cols):    # inner: iterate over cols
+        for row in range(self.rows):   
+            for col in range(self.cols): 
 
                 live_neighbor_count = self._count_neighbors(
                     row, col, NEIGHBOR_DIRECTIONS, 0

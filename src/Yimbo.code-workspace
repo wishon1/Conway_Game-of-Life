@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "../../Yimbo"
+		},
+		{
+			"path": "../../Yimbo_V2"
+		},
+		{
+			"path": "../../MedTech"
+		},
+		{
+			"path": "../../simple_shell"
+		},
+		{
+			"path": "../../Qemu"
+		},
+		{
+			"path": "../../Rust-Programming"
+		},
+		{
+			"path": "../../rattler"
+		},
+		{
+			"path": "../../UNIX-SHELL"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

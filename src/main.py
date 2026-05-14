@@ -2,9 +2,6 @@
 """
 main.py - Entry point of the program.
 
-Author : Wisdom A. Honest
-Project: Conway Game of life
-
 Architecture:
     main.py intentionally contains NO Conway rules and NO rendering
     implementation details.
@@ -17,6 +14,7 @@ Architecture:
 Execution flow:
     main()
         ├── parse arguments
+        ├── prompt user to select a pattern (interactive menu)
         ├── create Grid
         ├── stamp selected pattern
         ├── initialise curses Renderer
@@ -83,11 +81,45 @@ def parse_args():
     return arg_parser.parse_args()
 
 
+def select_pattern():
+    """
+    Display an interactive menu and return the user's chosen pattern name.
+
+    Runs before curses starts so the menu prints cleanly to the normal
+    terminal. ITERATION: loops until the user enters a valid choice.
+
+    Returns:
+        str: A valid key from the PATTERNS registry.
+    """
+    pattern_list = list(PATTERNS.keys())
+
+    print("\n  Conway's Game of Life \n")
+    print("  Select a starting pattern:\n")
+
+    # ITERATION — print each available pattern with its index
+    for idx, name in enumerate(pattern_list, start=1):
+        print(f"    [{idx}] {name}")
+
+    print()
+
+    # ITERATION — keep prompting until a valid choice is made
+    while True:
+        try:
+            raw = input("  Enter number and press Enter: ").strip()
+            choice = int(raw)
+            if 1 <= choice <= len(pattern_list):
+                selected = pattern_list[choice - 1]
+                print(f"\n  Starting with: {selected}\n")
+                return selected
+            limit = len(pattern_list)
+            print(f"  Enter a number between 1 and {limit}.")
+        except ValueError:
+            print("  Invalid input — enter a number.")
+
+
 def run(stdscr, args):
     """
     Initialise the grid and renderer, then drive the simulation loop.
-    This function is passed to curses.wrapper so the terminal is always
-    restored cleanly on exit or crash.
 
     Args:
         stdscr: The curses standard screen provided by curses.wrapper.
@@ -129,11 +161,12 @@ def run(stdscr, args):
 def main():
     """
     Program entry point.
-
-    Parses arguments and hands control to curses.wrapper which handles
-    terminal initialisation and guaranteed cleanup on exit or crash.
     """
     args = parse_args()
+
+    # if the user did not pass --pattern on the CLI, show the menu
+    if args.pattern == DEFAULT_PATTERN:
+        args.pattern = select_pattern()
 
     try:
         curses.wrapper(lambda stdscr: run(stdscr, args))
