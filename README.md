@@ -128,7 +128,7 @@ have no knowledge of each other — `main.py` is the only coordinator.
 ## Project Structure
 
 ```
-conway-riscv/
+Conway_Game-of-Life
 ├── README.md
 ├── src/
 │   ├── main.py
