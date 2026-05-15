@@ -163,7 +163,6 @@ def start(screen, args):
     """
     run(screen, args)
 
-
 def main():
     """
     Program entry point.
@@ -174,16 +173,17 @@ def main():
     if args.pattern == DEFAULT_PATTERN:
         args.pattern = select_pattern()
 
-        def start(stdscr):
-            """
-            Sets up the terminal for drawing
-            """
-            run(stdscr, args)
+    # defined after args is fully resolved so it can access it
+    def start(stdscr):
+        """
+        Sets up the terminal for drawing, calls run(),
+        then restores the terminal when done.
+        """
+        run(stdscr, args)
 
     try:
         curses.wrapper(start)
     except KeyboardInterrupt:
-        # clean exit on Ctrl-C — no stack trace printed to terminal
         sys.exit(0)
 
 
