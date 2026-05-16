@@ -112,8 +112,8 @@ class Grid:
                 self._previous_grid[row][col] = self._current_grid[row][col]
 
         # ITERATION — nested loops traverse every cell in the grid
-        for row in range(self.rows):   
-            for col in range(self.cols): 
+        for row in range(self.rows):
+            for col in range(self.cols):
 
                 live_neighbor_count = self._count_neighbors(
                     row, col, NEIGHBOR_DIRECTIONS, 0
