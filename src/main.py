@@ -156,12 +156,14 @@ def run(stdscr, args):
 
         generation += 1
         time.sleep(args.delay)
-    
+
+
 def start(screen, args):
     """
     calls run() function and passes the screen to it
     """
     run(screen, args)
+
 
 def main():
     """
